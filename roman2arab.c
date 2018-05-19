@@ -34,12 +34,12 @@ int oneRome2arab(char c);
 
 /* メイン */
 int main() {
-  char s[20] = {0};
+  char s[20] = {0}; /* この初期化は無意味 */
 
   printf("ローマ数字：");
   scanf("%s", s);
 
-  if(chkRome(s)) /* ローマ数字の規則に従っているかチェック */
+  if(chkRome(s)) /* ローマ数字の規則に従っているかチェック */   /* チェックしながら変換できますよ */
     printf("算用数字　：%d\n", rome2arab(s)); /* 算用数字に変換して表示 */
   else
     fprintf(stderr, "ERROR:入力が間違っています。\n");
@@ -68,6 +68,10 @@ int chkRome(char s[]){
     if(s[n] == five){
       tmp = n++;
       while(s[n]==one && s[n]!='\0' && (n-tmp)<4) n++; //1系が続く限り、3つまで数える 5111
+      /* 「oneであり、かつ NULLでない」　という奇妙な条件ですね。 oneがNULLになる可能性がある？
+　　　　　for(i=0;s[n]==one&&i<3;i++) n++;
+　　　　　とするほうが、3個以内というのが分かりやすいでしょう。
+　　　*/
     }else if(s[n] == one){
       tmp = n++;
       /*//////第二分岐///////*/
@@ -104,7 +108,11 @@ int rome2arab(char s[]){
   for(i=0; s[i]; i++)
     /* ローマ字に対応する数を足し（引き）合わせる */
     ((tmp = oneRome2arab(s[i])) < oneRome2arab(s[i+1])) ? (ans -= tmp):(ans += tmp);
-
+/*
+  ? は読みにくくするので、あまり多用はお勧めしませんが、使うならこうでしょう
+      tmp = oneRome2arab(s[1]);
+      ans += ( tmp < oneRome2arab(s[i+1]) ) ? -tmp : tmp;
+*/
   return ans;
 }
 
@@ -115,7 +123,8 @@ int oneRome2arab(char c){
   char rome[] = {'I', 'V', 'X', 'L', 'C', 'D', 'M'};
   int  arab[] = {1, 5, 10, 50, 100, 500, 1000};
 
-  for(int i=0; rome[i]; i++)
+  for(int i=0; rome[i]; i++)　　　　/* 途中で変数宣言するのは、(C++風の)新しいCの規格なので、コンパイラが古いと通りません */
     if(c == rome[i]) return arab[i];
+/* romeの長さが短いから、たいしたことなさそうですが、各文字ごとに繰り返しで比較するのは、非効率なような */
   return 0;
 }
